@@ -408,6 +408,7 @@ open class PieChartRenderer: NSObject, DataRenderer
 
                     var pt2: CGPoint
                     var labelPoint: CGPoint
+                    var labelPoint2 : CGPoint
                     var align: TextAlignment
 
                     var line1Radius: CGFloat
@@ -438,12 +439,14 @@ open class PieChartRenderer: NSObject, DataRenderer
                         pt2 = CGPoint(x: pt1.x - polyline2Length, y: pt1.y)
                         align = .right
                         labelPoint = CGPoint(x: pt2.x - 5, y: pt2.y - lineHeight)
+                        labelPoint2 = CGPoint(x: pt2.x - 5, y: pt2.y + 1)
                     }
                     else
                     {
                         pt2 = CGPoint(x: pt1.x + polyline2Length, y: pt1.y)
                         align = .left
                         labelPoint = CGPoint(x: pt2.x + 5, y: pt2.y - lineHeight)
+                        labelPoint2 = CGPoint(x: pt2.x + 5, y: pt2.y + 1)
                     }
 
                     DrawLine: do
@@ -471,19 +474,27 @@ open class PieChartRenderer: NSObject, DataRenderer
                     
                     if drawXOutside && drawYOutside
                     {
-                        context.drawText(valueText,
+                        
+                        let compsArray = valueText.components(separatedBy: "-")
+                        let drawText1 = compsArray.first ?? ""
+                        let drawText2 = compsArray.last ?? ""
+
+                        context.drawText(drawText1,
                                          at: labelPoint,
                                          align: align,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont,
                                                       .foregroundColor: valueTextColor])
                         
+                            context.drawText(drawText2, at: labelPoint2, align:align, angleRadians: angleRadians, attributes: [.font: UIFont.systemFont(ofSize: 10, weight: .regular),
+                                                                                                                                       .foregroundColor: UIColor.white.withAlphaComponent(0.8)])
+                        
                         if j < data.entryCount && pe?.label != nil
                         {
                             context.drawText(pe!.label!,
                                              at: CGPoint(x: labelPoint.x,
                                                          y: labelPoint.y + lineHeight),
-                                             align: align,
+                                             align: .left,
                                              angleRadians: angleRadians,
                                              attributes: [.font: entryLabelFont ?? valueFont,
                                                           .foregroundColor: entryLabelColor ?? valueTextColor])
